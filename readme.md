@@ -5,6 +5,7 @@ I suggest you play with this script in a virtual environment.
 
 then do a pip install -r requirements_dev.txt
 
-then you can run python issatso.py
+for example I check my time table using:
 
-*I will update this soon.*
+	python issatso.py lstable "Prepa-A1-04" | less
+
