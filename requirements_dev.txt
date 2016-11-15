@@ -1,6 +1,7 @@
 autopep8==1.2.4
 beautifulsoup4==4.5.1
 bs4==0.0.1
+click==6.6
 decorator==4.0.10
 flake8==3.0.4
 importmagic==0.1.7
