@@ -46,7 +46,11 @@ def lstable(**kwargs):
     except requests.exceptions.ConnectionError:
         # fallback to the old data, if any
         # else fail
-        days = pickle.load(open('data.p', 'rb'))
+        try:
+            days = pickle.load(open('data.p', 'rb'))
+        except FileNotFoundError:
+            print('Could not connect to the institute website nor I did find local data.')
+            exit(127)
     else:
         soup = BeautifulSoup(content.content, 'html.parser')
 
