@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from tabulate import tabulate
 import click
 import pickle
+import datetime
 
 
 corrTable = {
@@ -36,10 +37,11 @@ def lsgroups(**kwargs):
 @table.command()
 @click.argument('group')
 @click.option('--day', type=str)
+@click.option('--today', is_flag=True)
 def lstable(**kwargs):
     try:
         content = requests.post(
-            'http://www.issatsox.rnu.tn/emplois/empetd.php',
+            'http://www.issatso.rnu.tn/emplois/empetd.php',
             data={'etd': '%s-1' % kwargs['group']})
     except requests.exceptions.ConnectionError:
         # fallback to the old data, if any
@@ -72,10 +74,14 @@ def lstable(**kwargs):
 
         del days[0]
     currDay = kwargs.get('day')
+    today = kwargs.get('today')
     # save data
     pickle.dump(days, open('data.p', 'wb'))
     if currDay:
         day = days[corrTable[currDay.upper()]]
+    if today:
+        day = days[datetime.datetime.today().weekday()]
+    if currDay or today:
         print(
             tabulate(
                 [[
