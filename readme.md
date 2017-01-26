@@ -1,6 +1,11 @@
 
 # ISSAT Time table
 
+This is a scrot
+
+![Alt Text](scrot.png) 
+
+
 This is the code I use to quickly check my timetable on my terminal.
 
 **This script is a little hack, therfore it is not tested so weird errors may popup :(**
