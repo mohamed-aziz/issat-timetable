@@ -3,7 +3,7 @@
 
 This is the code I use to quickly check my timetable on my terminal.
 
-**This a fast script therfore it is not tested so weird errors may popup :(**
+**This script is a little hack, therfore it is not tested so weird errors may popup :(**
 
 ## Installing the code
 
