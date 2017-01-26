@@ -15,10 +15,12 @@ try:
     import click # noqa
     import pickle # noqa
     import datetime # noqa
+    from os import path # noqa
 except ImportError as e:
     print('Exited with error: {error}'.format(error=e))
     exit(127)
 
+FPATH = path.join(path.expanduser('~'), '.tb_data.p')
 
 corrTable = {
     'LUNDI': 0,
@@ -61,7 +63,7 @@ def lstable(**kwargs):
         # fallback to the old data, if any
         # else fail
         try:
-            days = pickle.load(open('data.p', 'rb'))
+            days = pickle.load(open(FPATH, 'rb'))
         except FileNotFoundError:
             print('Could not connect to the institute website nor I did find local data.')
             exit(127)
@@ -94,7 +96,7 @@ def lstable(**kwargs):
     currDay = kwargs.get('day')
     today = kwargs.get('today')
     # save data
-    pickle.dump(days, open('data.p', 'wb'))
+    pickle.dump(days, open(FPATH, 'wb'))
     if currDay:
         day = days[corrTable[currDay.upper()]]
     if today:
