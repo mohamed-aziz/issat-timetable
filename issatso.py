@@ -1,9 +1,23 @@
-import requests
-from bs4 import BeautifulSoup
-from tabulate import tabulate
-import click
-import pickle
-import datetime
+from os import getenv
+if getenv('TB_VENV_PATH'):
+    VENV_PATH = getenv('TB_VENV_PATH')
+    exec(
+        compile(open(VENV_PATH, 'r').read(), VENV_PATH, 'exec'), {
+            '__file__': VENV_PATH,
+            '__name__': '__main__'
+        }
+    )
+
+try:
+    import requests # noqa
+    from bs4 import BeautifulSoup # noqa
+    from tabulate import tabulate # noqa
+    import click # noqa
+    import pickle # noqa
+    import datetime # noqa
+except ImportError as e:
+    print('Exited with error: {error}'.format(error=e))
+    exit(127)
 
 
 corrTable = {
