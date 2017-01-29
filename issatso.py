@@ -100,7 +100,7 @@ def lstable(**kwargs):
     if currDay:
         day = days[corrTable[currDay.upper()]]
     if today:
-        day = days[datetime.datetime.today().weekday()]
+        day = days[datetime.datetime.today().weekday() % 6]
     if currDay or today:
         print(
             tabulate(
