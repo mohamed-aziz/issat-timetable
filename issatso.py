@@ -22,6 +22,7 @@ try:
     import pickle # noqa
     import datetime # noqa
     from os import path # noqa
+    import json # noqa
 except ImportError as e:
     print('Exited with error: {error}'.format(error=e))
     exit(127)
@@ -61,6 +62,7 @@ def lsgroups(**kwargs):
 @click.argument('group')
 @click.option('--day', type=str)
 @click.option('--today', is_flag=True)
+@click.option('--json', is_flag=True)
 def lstable(**kwargs):
     try:
         content = requests.post(
@@ -93,7 +95,7 @@ def lstable(**kwargs):
                     'name': eachRow.find_all('td')[1].font.text,
                     'debut': eachRow.find_all('td')[2].font.text,
                     'fin': eachRow.find_all('td')[3].font.text,
-                    'matiere': eachRow.find_all('td')[4].font.text.encode('utf-8'),
+                    'matiere': eachRow.find_all('td')[4].font.text,
                     'enseignant': eachRow.find_all('td')[5].font.text,
                     'type': eachRow.find_all('td')[6].font.text,
                     'salle': eachRow.find_all('td')[7].font.text,
@@ -102,6 +104,10 @@ def lstable(**kwargs):
         del days[0]
     currDay = kwargs.get('day')
     today = kwargs.get('today')
+    to_json = kwargs.get('json')
+    if to_json:
+        print(json.dumps(days, ensure_ascii=False, sort_keys=True, indent=4))
+        exit(0)
     # save data
     pickle.dump(days, open(FPATH, 'wb'))
     if currDay:
@@ -115,7 +121,7 @@ def lstable(**kwargs):
                     day['name'] if i == 0 else '', eachScance['name'],
                     eachScance['debut'], eachScance['fin'], eachScance[
                         'salle'], eachScance['type'], eachScance[
-                            'matiere'].decode('utf-8')
+                            'matiere']
                 ]
                 for i, eachScance in enumerate(day['seances'])],
                 tablefmt='fancy_grid'))
@@ -126,7 +132,7 @@ def lstable(**kwargs):
                     day['name'] if i == 0 else '', eachScance['name'],
                     eachScance['debut'], eachScance['fin'], eachScance[
                         'salle'], eachScance['type'], eachScance[
-                            'matiere'].decode('utf-8')
+                            'matiere']
                 ]
                 for day in days
                 for i, eachScance in enumerate(day['seances'])],
