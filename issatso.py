@@ -124,7 +124,9 @@ def lstable(**kwargs):
                             'matiere']
                 ]
                 for i, eachScance in enumerate(day['seances'])],
-                tablefmt='fancy_grid'))
+                tablefmt='fancy_grid',
+                headers=['Jour', 'Nom séance', 'debut', 'fin', 'type', 'matière']
+            ))
     else:
         print(
             tabulate(
@@ -136,7 +138,8 @@ def lstable(**kwargs):
                 ]
                 for day in days
                 for i, eachScance in enumerate(day['seances'])],
-                tablefmt='fancy_grid'))
+                tablefmt='fancy_grid',
+                headers=['Jour', 'Nom séance', 'debut', 'fin', 'type', 'matière']))
 
 
 if __name__ == '__main__':
