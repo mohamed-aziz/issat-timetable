@@ -1,5 +1,11 @@
+# coding: utf-8
+
+__license__ = 'GPLv3'
+__author__ = 'Mohamed Aziz Knani <medazizknani@gmail.com>'
+
 from os import getenv
 if getenv('TB_VENV_PATH'):
+    # use the virtual environment
     VENV_PATH = getenv('TB_VENV_PATH')
     exec(
         compile(open(VENV_PATH, 'r').read(), VENV_PATH, 'exec'), {
@@ -20,6 +26,7 @@ except ImportError as e:
     print('Exited with error: {error}'.format(error=e))
     exit(127)
 
+# exapnduser('~') works also on windows
 FPATH = path.join(path.expanduser('~'), '.tb_data.p')
 
 corrTable = {
