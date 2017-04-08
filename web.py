@@ -1,21 +1,24 @@
-from werkzeug.routing import Map, Rule
-from werkzeug.exceptions import HTTPException
-from werkzeug.wsgi import responder
-from werkzeug.wrappers import Response
+import json
 import pickle
 from os import path
-import json
-from bs4 import BeautifulSoup
+
 import requests
+from bs4 import BeautifulSoup
+
+from werkzeug.exceptions import HTTPException
+from werkzeug.routing import Map, Rule
+from werkzeug.wrappers import Response
+from werkzeug.wsgi import responder
 
 
 url = Map([
-    Rule('/groupes/<groupe>', endpoint='groupes'),
-    Rule('/groupes', endpoint='all_groupes'),
+    Rule(
+        '/groupes/<groupe>', endpoint='groupes'),
+    Rule(
+        '/groupes', endpoint='all_groupes'),
 ])
 
-
-FPATH = lambda p: path.join(path.expanduser('~'), 'emplois', p) # noqa
+FPATH = lambda p: path.join(path.expanduser('~'), 'emplois', p)  # noqa
 
 
 def save_days(group):
@@ -52,9 +55,10 @@ def all_groupes(response):
         gen = list(
             map(lambda x: x.text,
                 BeautifulSoup(
-                    requests.get('http://www.issatso.rnu.tn/emplois/etudiants.php')
-                    .text, 'html.parser').find('select', {'id': 'etd'}).find_all(
-                        'option')))
+                    requests.get(
+                        'http://www.issatso.rnu.tn/emplois/etudiants.php')
+                    .text, 'html.parser').find('select', {'id': 'etd'})
+                .find_all('option')))
         del gen[-1]
 
         try:
@@ -62,9 +66,9 @@ def all_groupes(response):
         except requests.exceptions.ConnectionError:
             return Response(status=500)
     return Response(
-        json.dumps(gen, ensure_ascii=False, sort_keys=True, indent=4),
-        content_type='application/json'
-    )
+        json.dumps(
+            gen, ensure_ascii=False, sort_keys=True, indent=4),
+        content_type='application/json')
 
 
 def groupes(response, groupe):
@@ -79,15 +83,12 @@ def groupes(response, groupe):
             return Response(status=500)
 
     return Response(
-        json.dumps(days, ensure_ascii=False, sort_keys=True, indent=4),
-        content_type='application/json'
-    )
+        json.dumps(
+            days, ensure_ascii=False, sort_keys=True, indent=4),
+        content_type='application/json')
 
 
-views = {
-    'groupes': groupes,
-    'all_groupes': all_groupes
-}
+views = {'groupes': groupes, 'all_groupes': all_groupes}
 
 
 @responder
@@ -95,12 +96,14 @@ def application(environ, response):
     urls = url.bind_to_environ(environ)
     try:
         endpoint, args = urls.match()
-        return urls.dispatch(lambda e, v: views[e](response, **v),
-                             catch_http_exceptions=True)
+        return Response.force_type(
+            urls.dispatch(
+                lambda e, v: views[e](response, **v),
+                catch_http_exceptions=True))
     except HTTPException as e:
-        return e(environ, response)
+        return e
 
 
 if __name__ == '__main__':
     from werkzeug.serving import run_simple
-    run_simple('localhost', 4000, application)
+    run_simple('localhost', 4000, application, use_debugger=True)
