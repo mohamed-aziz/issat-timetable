@@ -68,7 +68,6 @@ def get_days(rows):
         if eachRow.find_all('td')[1].center.text == '':
             if EXPR.match(eachRow.td.center.text) is None:
                 break
-            print(eachRow.td.center.text)
             days.append({'name': EXPR.match(eachRow.td.center.text).group(1), 'seances': []})
         else:
             # so this is not a new day?
@@ -89,6 +88,7 @@ def get_days(rows):
 @table.command()
 @click.argument('group')
 @click.option('--day', type=str)
+@click.option('--subgroup', type=int)
 @click.option('--today', is_flag=True)
 @click.option('--json', is_flag=True)
 def lstable(**kwargs):
@@ -107,7 +107,7 @@ def lstable(**kwargs):
             content = s.get(
                 'http://www.issatso.rnu.tn/fo/emplois/emploi_groupe.php',
                 params={
-                    'id': '%s' % group_lookup_table[kwargs['group'][:-2]], 'jeton': csrf_token, 'first_version': '1'})
+                    'id': '%s' % group_lookup_table[kwargs['group']], 'jeton': csrf_token, 'first_version': '1'})
 
     except KeyError:
         print('Group not found.')
@@ -121,15 +121,20 @@ def lstable(**kwargs):
             print('Could not connect to the institute website nor I did find local data.')
             exit(127)
     else:
+        if kwargs['subgroup']:
+            group = '{0}-{1}'.format(kwargs['group'], str(kwargs['subgroup']))
+        else:
+            group = kwargs['group']
+        print(group)
         soup = BeautifulSoup(content.content, 'html.parser')
         table = soup.find_all('table')[6]
         rows = table.find('tbody').find_all('tr')
         # grab always the first group and replace the intersection if
         # any other group exists
         days = get_days(rows[1:])
-        if (rows[0].td.center.text.lower() != kwargs['group'].lower()):
+        if (rows[0].td.center.text.lower() != group.lower()):
             for i, row in enumerate(rows):
-                if row.td.center.text.lower() == kwargs['group'].lower():
+                if row.td.center.text.lower() == group.lower():
                     rows = rows[i+1:]
                     break
             intersection = get_days(rows)
@@ -145,7 +150,6 @@ def lstable(**kwargs):
                                     break
                         days[i] = copiedday
 
-    print(days)
     currDay = kwargs.get('day')
     today = kwargs.get('today')
     to_json = kwargs.get('json')
