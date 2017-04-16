@@ -10,8 +10,7 @@ echo "Running issat api on port $1"
 
 workon issatso-api
 
-# cd /home/webuser/Projects/devslack-landing/devslack-landing
 
 pip install -r requirements_dev.txt
 
-gunicorn -b 127.0.0.1:$1 web:application
+gunicorn -b 127.0.0.1:$1 webapp:app
