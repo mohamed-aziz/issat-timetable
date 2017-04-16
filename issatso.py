@@ -23,6 +23,8 @@ try:
     import datetime # noqa
     from os import path # noqa
     import json # noqa
+    import re # noqa
+    from copy import deepcopy # noqa
 except ImportError as e:
     print('Exited with error: {error}'.format(error=e))
     exit(127)
@@ -31,12 +33,12 @@ except ImportError as e:
 FPATH = path.join(path.expanduser('~'), '.tb_data.p')
 
 corrTable = {
-    'LUNDI': 0,
-    'MARDI': 1,
-    'MERCREDI': 2,
-    'JEUDI': 3,
-    'VENDREDI': 4,
-    'SAMEDI': 5
+    'lundi': 0,
+    'mardi': 1,
+    'mercredi': 2,
+    'jeudi': 3,
+    'vendredi': 4,
+    'samedi': 5
 }
 
 
@@ -57,6 +59,32 @@ def lsgroups(**kwargs):
     del gen[-1]
     print(tabulate([[f] for f in gen], tablefmt='fancy_grid'))
 
+def get_days(rows):
+    EXPR = re.compile('\d+\-(\w+)')
+    days = list()
+    for eachRow in rows:
+        # if this a day?
+        # import pdb; pdb.set_trace()
+        if eachRow.find_all('td')[1].center.text == '':
+            if EXPR.match(eachRow.td.center.text) is None:
+                break
+            print(eachRow.td.center.text)
+            days.append({'name': EXPR.match(eachRow.td.center.text).group(1), 'seances': []})
+        else:
+            # so this is not a new day?
+            days[-1]['seances'].append({
+                'name': eachRow.find_all('td')[1].center.text,
+                'debut': eachRow.find_all('td')[2].center.text,
+                'fin': eachRow.find_all('td')[3].center.text,
+                'matiere': eachRow.find_all('td')[4].center.text,
+                'enseignant': eachRow.find_all('td')[5].center.text,
+                'type': eachRow.find_all('td')[6].center.text,
+                'salle': eachRow.find_all('td')[7].center.text,
+                'semaine': eachRow.find_all('td')[8].center.text,
+            })
+
+    return days
+
 
 @table.command()
 @click.argument('group')
@@ -65,9 +93,25 @@ def lsgroups(**kwargs):
 @click.option('--json', is_flag=True)
 def lstable(**kwargs):
     try:
-        content = requests.post(
-            'http://www.issatso.rnu.tn/emplois/empetd.php',
-            data={'etd': '%s-1' % kwargs['group']})
+        # get csrf token (jeton) and groups ids
+        try:
+            # cookies meh..
+            s = requests.Session()
+            soup = BeautifulSoup(s.get('http://www.issatso.rnu.tn/fo/emplois/emploi_groupe.php').content, 'html.parser')
+        except requests.exceptions.ConnectionError:
+            exit(1)
+        else:
+            # make a lookup dict for group name -> id
+            group_lookup_table = {elem.text: elem.attrs['value'] for elem in soup.find('form', id='form1').find('select', attrs={'name': 'id'}, ).findAll('option')}
+            csrf_token = soup.find('form', id='form1').find('input', id='jeton').attrs['value']
+            content = s.get(
+                'http://www.issatso.rnu.tn/fo/emplois/emploi_groupe.php',
+                params={
+                    'id': '%s' % group_lookup_table[kwargs['group'][:-2]], 'jeton': csrf_token, 'first_version': '1'})
+
+    except KeyError:
+        print('Group not found.')
+        exit(1)
     except requests.exceptions.ConnectionError:
         # fallback to the old data, if any
         # else fail
@@ -78,30 +122,30 @@ def lstable(**kwargs):
             exit(127)
     else:
         soup = BeautifulSoup(content.content, 'html.parser')
+        table = soup.find_all('table')[6]
+        rows = table.find('tbody').find_all('tr')
+        # grab always the first group and replace the intersection if
+        # any other group exists
+        days = get_days(rows[1:])
+        if (rows[0].td.center.text.lower() != kwargs['group'].lower()):
+            for i, row in enumerate(rows):
+                if row.td.center.text.lower() == kwargs['group'].lower():
+                    rows = rows[i+1:]
+                    break
+            intersection = get_days(rows)
+            # change seances?
+            for day in intersection:
+                for i, day1 in enumerate(days):
+                    if day1['name'] == day['name']:
+                        copiedday = deepcopy(day1)
+                        for sea in day['seances']:
+                            for j, sea1 in enumerate(day1['seances']):
+                                if sea['name'] == sea1['name'] and sea['semaine'] != sea1['semaine']:
+                                    copiedday['seances'][j] = sea
+                                    break
+                        days[i] = copiedday
 
-        table = soup.find_all('table')[1]
-
-        tr = table.find_all('tr')[2]
-
-        days = list()
-
-        for eachRow in tr.find_all('tr'):
-            # if this a day?
-            if eachRow.strong is not None:
-                days.append({'name': eachRow.strong.text, 'seances': []})
-            else:
-                # so this is not a new day?
-                days[-1]['seances'].append({
-                    'name': eachRow.find_all('td')[1].font.text,
-                    'debut': eachRow.find_all('td')[2].font.text,
-                    'fin': eachRow.find_all('td')[3].font.text,
-                    'matiere': eachRow.find_all('td')[4].font.text,
-                    'enseignant': eachRow.find_all('td')[5].font.text,
-                    'type': eachRow.find_all('td')[6].font.text,
-                    'salle': eachRow.find_all('td')[7].font.text,
-                })
-
-        del days[0]
+    print(days)
     currDay = kwargs.get('day')
     today = kwargs.get('today')
     to_json = kwargs.get('json')
@@ -121,11 +165,11 @@ def lstable(**kwargs):
                     day['name'] if i == 0 else '', eachScance['name'],
                     eachScance['debut'], eachScance['fin'], eachScance[
                         'salle'], eachScance['type'], eachScance[
-                            'matiere']
+                            'matiere'], eachScance['semaine']
                 ]
                 for i, eachScance in enumerate(day['seances'])],
                 tablefmt='fancy_grid',
-                headers=['Jour', 'Nom séance', 'debut', 'fin', 'type', 'matière']
+                headers=['Jour', 'Nom séance', 'debut', 'fin', 'type', 'matière', 'semaine']
             ))
     else:
         print(
@@ -134,12 +178,12 @@ def lstable(**kwargs):
                     day['name'] if i == 0 else '', eachScance['name'],
                     eachScance['debut'], eachScance['fin'], eachScance[
                         'salle'], eachScance['type'], eachScance[
-                            'matiere']
+                            'matiere'], eachScance['semaine']
                 ]
                 for day in days
                 for i, eachScance in enumerate(day['seances'])],
                 tablefmt='fancy_grid',
-                headers=['Jour', 'Nom séance', 'debut', 'fin', 'type', 'matière']))
+                headers=['Jour', 'Nom séance', 'debut', 'fin', 'type', 'matière', 'semaine']))
 
 
 if __name__ == '__main__':
