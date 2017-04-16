@@ -125,7 +125,6 @@ def lstable(**kwargs):
             group = '{0}-{1}'.format(kwargs['group'], str(kwargs['subgroup']))
         else:
             group = kwargs['group']
-        print(group)
         soup = BeautifulSoup(content.content, 'html.parser')
         table = soup.find_all('table')[6]
         rows = table.find('tbody').find_all('tr')
