@@ -50,14 +50,9 @@ def table():
 @table.command()
 def lsgroups(**kwargs):
     # magical, maybe ?
-    gen = list(
-        map(lambda x: x.text,
-            BeautifulSoup(
-                requests.get('http://www.issatso.rnu.tn/emplois/etudiants.php')
-                .text, 'html.parser').find('select', {'id': 'etd'}).find_all(
-                    'option')))
-    del gen[-1]
-    print(tabulate([[f] for f in gen], tablefmt='fancy_grid'))
+    soup = BeautifulSoup(requests.get('http://www.issatso.rnu.tn/fo/emplois/emploi_groupe.php').content, 'html.parser')
+    gen = {elem.text: elem.attrs['value'] for elem in soup.find('form', id='form1').find('select', attrs={'name': 'id'}, ).findAll('option')}
+    print(tabulate([[f] for f in gen.keys()], tablefmt='fancy_grid'))
 
 def get_days(rows):
     EXPR = re.compile('\d+\-(\w+)')
