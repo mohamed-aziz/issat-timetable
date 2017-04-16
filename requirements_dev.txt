@@ -27,3 +27,4 @@ wcwidth==0.1.7
 yapf==0.13.2
 Werkzeug==0.12.1
 gunicorn==19.7.1
+redis==2.10.5
