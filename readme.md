@@ -47,6 +47,8 @@ You can use commands like:
 	$ python3 issatso.py lstable "Your group" --today
 	$ python3 issatso.py lstable "Your group" --day vendredi
 
+You can also specify your sub-group, using the <code>--subgroup</code> parameter.
+
 Tired of typing all that, alias it :)
 
 	alias t='python3 ~/Projects/issatso/issatso.py lstable "Your group" --today'
@@ -55,4 +57,6 @@ just put that in your .bashrc or .zshrc or whatever.
 
 To output your data into json so that you use the output in other programs, just use <code>--json</code> flag.
 
-In the future this will support Emacs through helm maybe?
+There is also a web api which is up on [here](http://uspace.aziz.tn/issatso/) or you can run it yourself using your favourite wsgi webserver (I use gunicorn which is on the requirements file).
+
+In the future there will be an Emacs version.
