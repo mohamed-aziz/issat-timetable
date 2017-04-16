@@ -31,6 +31,18 @@ using gunicorn to deploy it (memory wise it is one of the best python wsgi serve
 also the api internally uses redis which means that it's thread safe (it wasn't always like this
 with previous versions of this code), no unit tests sadly.
 
+To run the web application using gunicorn:
+
+    (venv) $ gunicorn -b 127.0.0.1:8000 webapp:app
+
+You can also specify how many workers you want to create using the <code>--workers</code> argument.
+
+for example:
+
+    (venv) $ gunicorn -b 127.0.0.1:8000  --workers 4 webapp:app
+
+This will create 4 instances of the application, that can coexist together since which will
+produce in a gain of performance mainly.
 
 ## Terminal application
 
