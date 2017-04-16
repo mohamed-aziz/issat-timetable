@@ -41,6 +41,18 @@ for example:
 
     (venv) $ gunicorn -b 127.0.0.1:8000  --workers 4 webapp:app
 
+You can then make requests like:
+
+    http://localhost:8000/groupes
+
+To get the lookup table,
+
+    http://localhost:8000/groupes/M3ZiMjQxMTk=
+
+To get the timetable for a certain group, also you can get the timetable for a subgroup using
+
+    http://localhost:8000/groupes/M3ZiMjQxMTk=?groupe=2
+
 This will create 4 instances of the application, that can coexist together since which will
 produce in a gain of performance mainly.
 
