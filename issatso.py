@@ -153,7 +153,7 @@ def lstable(**kwargs):
     # save data
     pickle.dump(days, open(FPATH, 'wb'))
     if currDay:
-        day = days[corrTable[currDay.upper()]]
+        day = days[corrTable[currDay.lower()]]
     if today:
         day = days[datetime.datetime.today().weekday() % 6]
     if currDay or today:
