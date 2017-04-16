@@ -1,16 +1,5 @@
 # ISSAT Time table
 
-This is a scrot
-
-![Alt Text](scrot.png)
-
-
-This is the code that I use to quickly check my timetable on my terminal.
-
-**This script is a little hack, therfore it is not tested so weird errors may popup :(**
-
-**Note: This only supports python3 though it may work on 2**
-
 ## Installing the code
 
 So first clone the repo
@@ -30,7 +19,29 @@ Then you can install the code requirements:
 
 	(venv) $ pip install -r requirements_dev.txt
 
-## Using the code
+## Web API
+
+I wrote a web API for people to use in their projects, it's up here [here](http://uspace.aziz.tn/issatso/)
+you can use it for free though I don't guarantee the stability of the server.
+
+The API is documented in index.html, though I suggest reading the code which
+won't be much of a challenge because Python WSGI is fucking poetry, anyways
+if you want to run the code on your own I suggest
+using gunicorn to deploy it (memory wise it is one of the best python wsgi server),
+also the api internally uses redis which means that it's thread safe (it wasn't always like this
+with previous versions of this code), no unit tests sadly.
+
+
+## Terminal application
+
+**This only supports python3 due to the ugly virtualenv hack.**
+
+**Also the code is a fucking hack and needs full rewrite sometime?**
+
+
+This is a scrot:
+
+![Alt Text](scrot.png)
 
 Just run your issatso.py file;
 
@@ -46,8 +57,7 @@ You can use commands like:
 
 	$ python3 issatso.py lstable "Your group" --today
 	$ python3 issatso.py lstable "Your group" --day vendredi
-
-You can also specify your sub-group, using the <code>--subgroup</code> parameter.
+    $ python3 issatso.py lstable "Your group" --subgroup 2  --day vendredi
 
 Tired of typing all that, alias it :)
 
@@ -55,8 +65,6 @@ Tired of typing all that, alias it :)
 
 just put that in your .bashrc or .zshrc or whatever.
 
-To output your data into json so that you use the output in other programs, just use <code>--json</code> flag.
+To output your data into json so that you can use the output in other programs, just use <code>--json</code> flag.
 
-There is also a web api which is up on [here](http://uspace.aziz.tn/issatso/) or you can run it yourself using your favourite wsgi webserver (I use gunicorn which is on the requirements file).
-
-In the future there will be an Emacs version.
+I will write an emacs plugin when I have time for this.
