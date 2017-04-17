@@ -21,21 +21,21 @@ Then you can install the code requirements:
 
 ## Web API
 
-I wrote a web API for people to use in their projects, it's up here [here](http://uspace.aziz.tn/issatso/)
+I wrote a web API for people to use in their projects, it's up [here](http://uspace.aziz.tn/issatso/)
 you can use it for free though I don't guarantee the stability of the server.
 
 The API is documented in index.html, though I suggest reading the code which
 won't be much of a challenge because Python WSGI is fucking poetry, anyways
 if you want to run the code on your own I suggest
-using gunicorn to deploy it (memory wise it is one of the best python wsgi server),
-also the api internally uses redis which means that it's thread safe (it wasn't always like this
-with previous versions of this code), no unit tests sadly.
+using gunicorn to deploy it (memory wise it is one of the best python wsgi server).
 
 To run the web application using gunicorn:
 
     (venv) $ gunicorn -b 127.0.0.1:8000 webapp:app
 
-You can also specify how many workers you want to create using the <code>--workers</code> argument.
+The api internally uses redis which means that it's thread safe (it wasn't always like this
+with previous versions of this code), so this means that you can specify
+how many workers you want to create using the <code>--workers</code> argument.
 
 for example:
 
@@ -56,6 +56,8 @@ To get the timetable for a certain group, also you can get the timetable for a s
 
     http://localhost:8000/groupes/M3ZiMjQxMTk=?groupe=2
 
+
+Sadly there is no unit tests till now.
 
 ## Terminal application
 
