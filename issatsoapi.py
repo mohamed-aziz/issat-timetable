@@ -17,7 +17,7 @@ from werkzeug.wrappers import Response, Request
 # Constants
 ###########
 
-EXPIRATION_CACHE = 3600
+EXPIRATION_CACHE = 3600 * 24
 EXPR = re.compile('\d+\-(\w+)')
 
 ###############
