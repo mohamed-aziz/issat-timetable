@@ -152,7 +152,7 @@ class TimeTable:
             endpoint, values = adapter.match()
             return getattr(self, 'on_' + endpoint)(request, **values)
         except NotFound as e:
-            return self.error_404()
+            return e
         except HTTPException as e:
             return e
 
