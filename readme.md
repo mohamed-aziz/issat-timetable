@@ -61,8 +61,6 @@ To get the timetable for a certain group, also you can get the timetable for a s
 
 **This only supports python3 due to the ugly virtualenv hack.**
 
-**Also the code is a fucking hack and needs full rewrite sometime?**
-
 
 This is a scrot:
 
@@ -82,11 +80,13 @@ You can use commands like:
 
 	$ python3 issatso.py lstable "Your group" --today
 	$ python3 issatso.py lstable "Your group" --day vendredi
-    $ python3 issatso.py lstable "Your group" --subgroup 2  --day vendredi
+    $ python3 issatso.py lstable "Your group" --subgroup 2
+
+You can also get the cached data using the <code>--cached</code> paramater.
 
 Tired of typing all that, alias it :)
 
-	alias t='python3 ~/Projects/issatso/issatso.py lstable "Your group" --today'
+	alias t='python3 ~/Projects/issatso/issatso.py lstable "Your group" --today --cached'
 
 just put that in your .bashrc or .zshrc or whatever.
 
