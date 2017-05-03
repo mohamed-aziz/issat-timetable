@@ -74,7 +74,7 @@ def get_days(group, sgrp=None):
             'first_version': '1'})
 
     soup = BeautifulSoup(content.content, 'html.parser')
-    table = soup.find_all('table')[6]
+    table = soup.find_all('table')[8]
     rows = table.find('tbody').find_all('tr')
     days = return_days(rows[1:])
     if sgrp is not None:
