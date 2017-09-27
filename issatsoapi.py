@@ -90,12 +90,15 @@ def get_days(group, sgrp=None):
                 if day1['name'] == day['name']:
                     copiedday = deepcopy(day1)
                     for sea in day['seances']:
-                        for j, sea1 in enumerate(day1['seances']):
-                            if sea['name'] == sea1['name'] and sea['semaine'] != sea1['semaine']:
-                                copiedday['seances'][j] = sea
-                                break
+                        copiedday['seances'][:] = [ss for ss in copiedday['seances'] if ss['name'] != sea['name']]
+                    for sea in day['seances']:
+                        gen = (index for (index, d) in enumerate(copiedday['seances']) if d['name'] == sea['name'])
+                        copiedday['seances'].append(sea)
                     days[i] = copiedday
 
+    # sort the shit
+    for day in days:
+        day['seances'].sort(key=lambda x: int(x['name'][1]))
     return days
 
 ####################

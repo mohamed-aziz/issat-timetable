@@ -21,6 +21,8 @@ Then you can install the code requirements:
 
 ## Web API
 
+**Note:** I no longer operate http://uspace.aziz.tn/ so just run your own server, you need redis installed.
+
 I wrote a web API for people to use in their projects, it's up [here](http://uspace.aziz.tn/issatso/)
 you can use it for free though I don't guarantee the stability of the server.
 
